@@ -48,20 +48,21 @@
   </script>
   <!-- Meta Pixel Code -->
   <script>
-  !function(f,b,e,v,n,t,s)
-  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-  n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];
-  s.parentNode.insertBefore(t,s)}(window, document,'script',
-  'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', '294131638634570');
-  fbq('track', 'PageView');
+  window.initializeMetaPixel = function() {
+    if (window.__metaPixelInitialized) return;
+    window.__metaPixelInitialized = true;
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '294131638634570');
+    fbq('track', 'PageView');
+  };
   </script>
-  <noscript><img height="1" width="1" style="display:none"
-  src="https://www.facebook.com/tr?id=294131638634570&ev=PageView&noscript=1"
-  /></noscript>
   <!-- End Meta Pixel Code -->
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap');
@@ -776,6 +777,69 @@
       line-height: 1.5;
     }
 
+    .cookie-consent {
+      position: fixed;
+      right: clamp(14px, 2vw, 28px);
+      bottom: clamp(14px, 2vw, 28px);
+      left: clamp(14px, 2vw, 28px);
+      z-index: 40;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 18px;
+      border: 1px solid rgba(239, 181, 0, 0.42);
+      background: rgba(13, 10, 5, 0.97);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .cookie-consent[hidden] {
+      display: none;
+    }
+
+    .cookie-consent p {
+      color: var(--cream);
+      font-size: 13.5px;
+      line-height: 1.45;
+    }
+
+    .cookie-consent a {
+      color: var(--gold-soft);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .cookie-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .cookie-button {
+      min-height: 38px;
+      border: 1px solid rgba(239, 181, 0, 0.34);
+      border-radius: 8px;
+      padding: 0 14px;
+      background: transparent;
+      color: var(--cream);
+      font-family: var(--narrow-font);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .cookie-button-primary {
+      border-color: transparent;
+      background: #ff6535;
+      color: #160f00;
+    }
+
     @media (max-width: 980px) {
       .split,
       .guarantee,
@@ -816,6 +880,15 @@
       }
       .footer div:last-child {
         text-align: left;
+      }
+      .cookie-consent {
+        grid-template-columns: 1fr;
+      }
+      .cookie-actions {
+        justify-content: stretch;
+      }
+      .cookie-button {
+        flex: 1;
       }
     }
   </style>
@@ -1026,5 +1099,52 @@
       <p>Desarrollado por Edilson Morais con Sistema Maestro Sites</p>
     </div>
   </footer>
+
+  <aside class="cookie-consent" id="cookieConsent" aria-label="Consentimiento de cookies" hidden>
+    <p>Usamos cookies para medir visitas y mejorar tu experiencia. Puedes aceptar o rechazar las cookies de medición. Consulta nuestra <a href="https://politica-de-privacidade.rota50ia.com/" target="_blank" rel="noreferrer">Política de Privacidad</a>.</p>
+    <div class="cookie-actions">
+      <button class="cookie-button" type="button" data-cookie-choice="rejected">Rechazar</button>
+      <button class="cookie-button cookie-button-primary" type="button" data-cookie-choice="accepted">Aceptar</button>
+    </div>
+  </aside>
+
+  <script>
+    (function() {
+      var storageKey = 'campanhas2026_es_cookie_consent';
+      var banner = document.getElementById('cookieConsent');
+      var savedChoice = null;
+
+      try {
+        savedChoice = localStorage.getItem(storageKey);
+      } catch (error) {
+        savedChoice = null;
+      }
+
+      if (savedChoice === 'accepted' && window.initializeMetaPixel) {
+        window.initializeMetaPixel();
+      }
+
+      if (!savedChoice && banner) {
+        banner.hidden = false;
+      }
+
+      if (!banner) return;
+
+      banner.addEventListener('click', function(event) {
+        var button = event.target.closest('[data-cookie-choice]');
+        if (!button) return;
+
+        var choice = button.getAttribute('data-cookie-choice');
+        try {
+          localStorage.setItem(storageKey, choice);
+        } catch (error) {}
+        banner.hidden = true;
+
+        if (choice === 'accepted' && window.initializeMetaPixel) {
+          window.initializeMetaPixel();
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
